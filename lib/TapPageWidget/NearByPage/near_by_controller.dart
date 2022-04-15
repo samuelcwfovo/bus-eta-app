@@ -156,9 +156,6 @@ class NearByController extends GetxController {
 
     String time = etaData[index]['eta'];
     // log(time);
-    if (time.contains(' ')) {
-      time = time.replaceAll(' ', 'T') + '+08:00';
-    }
     var different = DateTime.parse(time).difference(DateTime.now());
 
     if (different.inSeconds < 0) {

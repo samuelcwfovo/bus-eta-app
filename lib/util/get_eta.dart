@@ -135,6 +135,13 @@ class Eta {
       } else if (company == 'nlb' && route['stops'].containsKey('nlb')) {
         List data = await nlb(route['stops']['nlb'][seq], route['nlbId']);
         for (var element in data) {
+          if ((element as Map).containsKey('eta')) {
+            String time = element['eta'];
+            if (time.contains(' ')) {
+              time = time.replaceAll(' ', 'T') + '+08:00';
+              element['eta'] = time;
+            }
+          }
           eta.add(element);
         }
       } else if (company == 'lrtfeeder' &&

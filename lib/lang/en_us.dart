@@ -28,5 +28,12 @@ const Map<String, String> enUS = {
   'lrt': "LRT",
   'noETAprovide': "Failed to provide real-time arrival",
   'ETAprovide': "Provide real-time arrival",
-  'currentTrain': "Current Trains (Per Hour): "
+  'currentTrain': "Current Trains (Per Hour): ",
+  'emptyList': "Empty List",
+  'newBookMarkGroup': "New bookmark group",
+  'bookMarkGroupName': "Bookmark Group Name",
+  'bookmarkNameExist': "Bookmark Group name already exist",
+  "added": " added",
+  "Confirm": "Confirm",
+  "Cancel": "Cancel"
 };

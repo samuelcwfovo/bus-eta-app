@@ -59,27 +59,73 @@ class BookmarkController extends GetxController {
     flutterNotificationPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
 
-    showNoti();
+    mainController.onDBLoadedStream.stream.listen((_) {
+      displayAllNoti();
+    });
   }
 
-  void showNoti() async {
-    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-        'your channel id', 'your channel name',
-        channelDescription: 'your channel description',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: false,
-        ticker: 'ticker',
-        ongoing: true,
-        autoCancel: false);
+  bool isValidTimeRange(startHour, startMin, endHour, endMin) {
+    TimeOfDay now = TimeOfDay.now();
 
-    var platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
+    return ((now.hour > startHour) ||
+            (now.hour == startHour && now.minute >= startMin)) &&
+        ((now.hour < endHour) || (now.hour == endHour && now.minute <= endMin));
+  }
 
-    flutterNotificationPlugin.show(0, 'New Alert',
-        'How to show Local Notification', platformChannelSpecifics,
-        payload: 'No Sound');
+  bool isValidDay(List days) {
+    DateTime now = DateTime.now();
+    return days[now.weekday - 1];
+  }
+
+  void displayAllNoti() {
+    var index = 1;
+    for (var group in mainController.favouriteListGroup2.value) {
+      if (isValidDay(group.weekdays) &&
+          isValidTimeRange(
+              group.startHour, group.startMin, group.endHour, group.endMin)) {
+        List<String> lines = [];
+        for (var stop in mainController.favouriteStopList.value) {
+          if (stop.displayGroup == group.name) {
+            log("noit");
+
+            String route =
+                mainController.DB['routeList'][stop.routeKey]['route'];
+            String dest = mainController.DB['routeList'][stop.routeKey]['dest']
+                [Get.locale!.languageCode];
+            String stopName = mainController.DB['stopList'][stop.stopID]['name']
+                [Get.locale!.languageCode];
+
+            lines.add(
+                "$route $stopName ${'to'.tr} $dest   ${getETATime(stop.routeKey, stop.seq, 0)}");
+
+            // showNoti(index, "$route $stopName ${'to'.tr} $dest",
+            //     getNotiETATime(stop.routeKey, stop.seq, 0), group.name);
+          }
+        }
+
+        if (lines.isNotEmpty) {
+          displayNoti(lines, group.name, index);
+          index++;
+        }
+      }
+    }
+  }
+
+  void displayNoti(List<String> lines, groupKey, index) async {
+    InboxStyleInformation inboxStyleInformation = InboxStyleInformation(lines,
+        contentTitle: groupKey, summaryText: '到站預報');
+    AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails("groupChannelId", "groupChannelName",
+            channelDescription: "groupChannelDescription",
+            styleInformation: inboxStyleInformation,
+            groupKey: groupKey,
+            ongoing: true,
+            autoCancel: false,
+            setAsGroupSummary: true);
+    NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterNotificationPlugin.show(
+        index, groupKey, '${lines.length}條巴士線', platformChannelSpecifics);
   }
 
   void setDisplayContent() {
@@ -91,6 +137,10 @@ class BookmarkController extends GetxController {
     contents.clear();
     mainController.favouriteListGroup2.forEach((e) {
       contents.add(DragAndDropList(
+          contentsWhenEmpty: Padding(
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Text("emptyList".tr),
+          ),
           header: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Padding(
@@ -407,9 +457,14 @@ class BookmarkController extends GetxController {
 
     contents.value[newListIndex].children.insert(newItemIndex, movedItem);
 
-    log((movedItem.feedbackWidget! as Text).data!);
+    log("feedbackWidget" + (movedItem.feedbackWidget! as Text).data!);
+
+    var id = (movedItem.feedbackWidget! as Text).data!;
+
+    mainController.onFavouriteItemReorder(id, newListIndex);
 
     contents.refresh();
+    displayAllNoti();
   }
 
   void onListReorder(int oldListIndex, int newListIndex) {
@@ -418,7 +473,8 @@ class BookmarkController extends GetxController {
     contents.refresh();
 
     mainController.onFavouriteGroupReorder(oldListIndex, newListIndex);
-    log(mainController.favouriteListGroup.toString());
+    displayAllNoti();
+    // log(mainController.favouriteListGroup.toString());
   }
 
   void fetchAllStopsETA() async {
@@ -434,6 +490,7 @@ class BookmarkController extends GetxController {
     await Future.wait(futures);
     log("finish");
     setDisplayContent();
+    displayAllNoti();
   }
 
   Future<void> fetchEtaAction(
@@ -446,6 +503,34 @@ class BookmarkController extends GetxController {
       nearByStopEta.value[routeKey] = {};
     }
     nearByStopEta.value[routeKey][seq] = result;
+  }
+
+  String getNotiETATime(String routeKey, int seq, int index) {
+    var etaData = nearByStopEta.value[routeKey];
+
+    if (etaData == null) {
+      return "loadingETA".tr;
+    }
+
+    if (etaData[seq] == null || etaData[seq].length <= index) {
+      return "${"noETA".tr} ";
+    }
+
+    etaData = etaData[seq];
+    if (etaData[index]['eta'] == null || etaData[index]['eta'] == "") {
+      return "${"noETA".tr}  ${etaData[index]['remark'][Get.locale!.languageCode]}";
+    }
+
+    var different =
+        DateTime.parse(etaData[index]['eta']).difference(DateTime.now());
+
+    if (different.inSeconds < 0) {
+      return "leave".tr;
+    }
+
+    String eta = "${different.inMinutes} ${'min'.tr}";
+
+    return "${eta.padRight(10, '  ')}    ${(etaData[index]['co'] as String).tr}    ${etaData[index]['remark'][Get.locale!.languageCode]}";
   }
 
   String getETATime(String routeKey, int seq, int index) {

@@ -30,5 +30,12 @@ const Map<String, String> zhHK = {
   'lrt': "輕鐵",
   'noETAprovide': "未能提供實時到站",
   'ETAprovide': "提供實時到站",
-  'currentTrain': "現時列車數目(每小時): "
+  'currentTrain': "現時列車數目(每小時): ",
+  'emptyList': "空白列表",
+  'newBookMarkGroup': "新增書籤",
+  'bookMarkGroupName': "書籤名稱",
+  'bookmarkNameExist': "書籤名字已被使用",
+  "added": " 已添加",
+  "Confirm": "確認",
+  "Cancel": "取消"
 };

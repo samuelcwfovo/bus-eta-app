@@ -42,7 +42,7 @@ class FavouriteItem {
 
 class FavouriteGroup {
   String name;
-  List<bool> weekdays = [true, true, true, true, true, true, true];
+  List<dynamic> weekdays = [true, true, true, true, true, true, true];
   int startHour = 0;
   int startMin = 0;
   int endHour = 23;
@@ -79,7 +79,7 @@ class MainController extends GetxController {
   var cameraDB = [].obs;
   var favouriteStopList = <FavouriteItem>[].obs;
   var favouriteListGroup2 = <FavouriteGroup>[].obs;
-  var favouriteListGroup = <String>[].obs;
+  // var favouriteListGroup = <String>[].obs;
   late BuildContext buildContext;
 
   var loadingDB = true.obs;
@@ -171,7 +171,7 @@ class MainController extends GetxController {
 
   void loadFavourite() async {
     final prefs = await SharedPreferences.getInstance();
-    saveFavouriteList();
+    // saveFavouriteList();
     final String? favouriteListString = prefs.getString('favouriteList');
     final String? favouriteGroupString = prefs.getString('favouriteGroup');
 
@@ -183,17 +183,18 @@ class MainController extends GetxController {
     //   favouriteListGroup.add('test2');
     // }
 
-    // if (favouriteGroupString != null) {
-    //   List<dynamic> favouriteGroups = jsonDecode(favouriteGroupString);
-    //   for (var json in favouriteGroups) {
-    //     favouriteListGroup2.value.add(FavouriteGroup.fromJson(json));
-    //   }
-    //   favouriteListGroup2.refresh();
-    // }
+    if (favouriteGroupString != null) {
+      List<dynamic> favouriteGroups = jsonDecode(favouriteGroupString);
 
-    favouriteListGroup2.add(FavouriteGroup(name: 'default'));
-    favouriteListGroup2.add(FavouriteGroup(name: 'test'));
-    favouriteListGroup2.add(FavouriteGroup(name: 'test2'));
+      for (var json in favouriteGroups) {
+        favouriteListGroup2.value.add(FavouriteGroup.fromJson(json));
+      }
+      favouriteListGroup2.refresh();
+    } else {
+      favouriteListGroup2.add(FavouriteGroup(name: 'default'));
+      favouriteListGroup2.add(FavouriteGroup(name: '返工'));
+      favouriteListGroup2.add(FavouriteGroup(name: '回家'));
+    }
 
     if (favouriteListString != null) {
       List<dynamic> favouriteList = jsonDecode(favouriteListString);
@@ -211,8 +212,7 @@ class MainController extends GetxController {
     });
   }
 
-  void onFavouriteItemReorder(
-      int itemOldRealIndex, int itemNewRealIndex, int newgroupIndex) {
+  void onFavouriteItemReorder(String id, int newgroupIndex) {
     // favouriteStopList[itemOldRealIndex].displayGroup =
     //     favouriteListGroup[newgroupIndex];
 
@@ -224,6 +224,10 @@ class MainController extends GetxController {
 
     // BookmarkController bookmarkController = Get.find<BookmarkController>();
     // bookmarkController.setDisplayContent();
+
+    var stop = favouriteStopList.firstWhere((e) => e.uniqueKey == id);
+    stop.displayGroup = favouriteListGroup2[newgroupIndex].name;
+    saveFavouriteList();
   }
 
   void onFavouriteGroupReorder(int oldListIndex, int newListIndex) {
@@ -274,7 +278,7 @@ class MainController extends GetxController {
     });
 
     favouriteStopList.refresh();
-
+    saveFavouriteList();
     saveFavouriteGroup();
   }
 
@@ -285,10 +289,10 @@ class MainController extends GetxController {
       context: buildContext,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("New bookmark group"),
+          title: Text("newBookMarkGroup".tr),
           content: TextField(
             controller: _textFieldController,
-            decoration: InputDecoration(hintText: "New bookmark group name"),
+            decoration: InputDecoration(hintText: "bookMarkGroupName".tr),
           ),
           actions: <Widget>[
             TextButton(
@@ -296,7 +300,7 @@ class MainController extends GetxController {
                   if (favouriteListGroup2.indexWhere((element) =>
                           element.name == _textFieldController.text) !=
                       -1) {
-                    Get.snackbar("Bookmark Group name already exist", "");
+                    Get.snackbar("bookmarkNameExist".tr, "");
                     return;
                   }
 
@@ -309,12 +313,12 @@ class MainController extends GetxController {
 
                   bookmarkController.setDisplayContent();
                   Navigator.of(context).pop();
-                  Get.snackbar(_textFieldController.text + " added", "");
+                  Get.snackbar(_textFieldController.text + "added".tr, "");
                 },
-                child: const Text("Confirm")),
+                child: Text("Confirm".tr)),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
+              child: Text("Cancel".tr),
             ),
           ],
         );
