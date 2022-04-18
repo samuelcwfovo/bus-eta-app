@@ -329,7 +329,7 @@ class RouteDetailController extends GetxController {
       Map<String, String> parms = {
         'language': Get.locale!.toLanguageTag(),
         'departure_time': 'now',
-        'key': 'AIzaSyCEmBt-keCQm9W3WJkBAMQtlb8H5msU_Vk',
+        'key': 'AIzaSyBz81mi72Lzjd03mmVplVA3jYUBavGHhks',
         'origins':
             "${stopData['location']['lat']},${stopData['location']['lng']}",
         'destinations':
