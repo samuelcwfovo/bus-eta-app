@@ -118,6 +118,7 @@ class BookmarkController extends GetxController {
         AndroidNotificationDetails("groupChannelId", "groupChannelName",
             channelDescription: "groupChannelDescription",
             styleInformation: inboxStyleInformation,
+            playSound: false,
             groupKey: groupKey,
             ongoing: true,
             autoCancel: false,

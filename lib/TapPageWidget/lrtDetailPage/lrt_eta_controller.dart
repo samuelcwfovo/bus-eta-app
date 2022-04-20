@@ -72,9 +72,13 @@ class LRTETAController extends GetxController {
     if (columnIndex == 3) {
       var id = 'time_' + languageCode;
       if (ascending) {
-        listdata.sort((a, b) => a[id].compareTo(b[id]));
+        listdata.sort((a, b) =>
+            int.parse(a[id].replaceAll(RegExp('[^0-9]'), ''))
+                .compareTo(int.parse(b[id].replaceAll(RegExp('[^0-9]'), ''))));
       } else {
-        listdata.sort((a, b) => b[id].compareTo(a[id]));
+        listdata.sort((a, b) =>
+            int.parse(b[id].replaceAll(RegExp('[^0-9]'), ''))
+                .compareTo(int.parse(a[id].replaceAll(RegExp('[^0-9]'), ''))));
       }
     }
     ETAData.refresh();
