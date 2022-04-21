@@ -72,13 +72,40 @@ class LRTETAController extends GetxController {
     if (columnIndex == 3) {
       var id = 'time_' + languageCode;
       if (ascending) {
-        listdata.sort((a, b) =>
-            int.parse(a[id].replaceAll(RegExp('[^0-9]'), ''))
-                .compareTo(int.parse(b[id].replaceAll(RegExp('[^0-9]'), ''))));
+        listdata.sort((a, b) {
+          var aNum = a[id].replaceAll(RegExp('[^0-9]'), '');
+          var bNum = b[id].replaceAll(RegExp('[^0-9]'), '');
+
+          if (aNum == "") {
+            return -1;
+          }
+          if (bNum == "") {
+            return 1;
+          }
+
+          return int.parse(aNum).compareTo(int.parse(bNum));
+        });
+        // listdata.sort((a, b) =>
+        //     int.parse(a[id].replaceAll(RegExp('[^0-9]'), ''))
+        //         .compareTo(int.parse(b[id].replaceAll(RegExp('[^0-9]'), ''))));
       } else {
-        listdata.sort((a, b) =>
-            int.parse(b[id].replaceAll(RegExp('[^0-9]'), ''))
-                .compareTo(int.parse(a[id].replaceAll(RegExp('[^0-9]'), ''))));
+        listdata.sort((a, b) {
+          var aNum = a[id].replaceAll(RegExp('[^0-9]'), '');
+          var bNum = b[id].replaceAll(RegExp('[^0-9]'), '');
+
+          if (aNum == "") {
+            return 1;
+          }
+          if (bNum == "") {
+            return -1;
+          }
+
+          return int.parse(bNum).compareTo(int.parse(aNum));
+        });
+
+        // listdata.sort((a, b) =>
+        //     int.parse(b[id].replaceAll(RegExp('[^0-9]'), ''))
+        //         .compareTo(int.parse(a[id].replaceAll(RegExp('[^0-9]'), ''))));
       }
     }
     ETAData.refresh();

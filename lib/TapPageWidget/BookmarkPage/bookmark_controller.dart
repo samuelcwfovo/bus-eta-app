@@ -317,11 +317,11 @@ class BookmarkController extends GetxController {
 
                                             Navigator.of(context).pop(true);
                                           },
-                                          child: const Text("Comfirm")),
+                                          child: Text("Confirm".tr)),
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.of(context).pop(false),
-                                        child: const Text("Cancel"),
+                                        child: Text("Cancel".tr),
                                       )
                                     ],
                                   );
@@ -570,15 +570,15 @@ class BookmarkController extends GetxController {
       context: buildContext,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Delete Confirmation"),
-          content: const Text("Are you sure you want to delete this item?"),
+          title: Text("deleteConfirmTitle".tr),
+          content: Text("deleteConfirmText".tr),
           actions: <Widget>[
             TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text("Delete")),
+                child: Text("delete".tr)),
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text("Cancel"),
+              child: Text("Cancel".tr),
             ),
           ],
         );

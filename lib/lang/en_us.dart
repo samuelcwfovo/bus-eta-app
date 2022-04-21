@@ -35,5 +35,17 @@ const Map<String, String> enUS = {
   'bookmarkNameExist': "Bookmark Group name already exist",
   "added": " added",
   "Confirm": "Confirm",
-  "Cancel": "Cancel"
+  "Cancel": "Cancel",
+  "deleteConfirmTitle": "Delete Confirmation",
+  "deleteConfirmText": "Are you sure you want to delete this item ?",
+  "StartTime": "Start Time",
+  "EndTime": "End Time",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "bookmarkGroupSelect": "Please select bookmark group",
 };

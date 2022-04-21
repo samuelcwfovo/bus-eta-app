@@ -506,7 +506,7 @@ class RouteDetailController extends GetxController {
         context: buildContext.value!,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Please select bookmark group"),
+            title: Text("bookmarkGroupSelect".tr),
             content: Obx(() => DropdownButton(
                   value: favGroup.value,
                   isExpanded: true,
@@ -530,10 +530,10 @@ class RouteDetailController extends GetxController {
                         routeIndex, stopID, favGroup.value, index);
                     Navigator.of(context).pop(true);
                   },
-                  child: const Text("Comfirm")),
+                  child: Text("Confirm".tr)),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text("Cancel"),
+                child: Text("Cancel".tr),
               )
             ],
           );
